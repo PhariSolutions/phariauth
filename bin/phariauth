@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+require 'fileutils'
+require 'mongo'
+
+ARGV.each do |arg|
+  case arg
+  when 'init'
+    FileUtils.mkdir_p('lib/tasks')
+    exec('cd lib/tasks && wget https://s3.amazonaws.com/phariauth/phariauth.rake')
+    exec('cd ../../config && wget https://s3.amazonaws.com/phariauth/database_phariauth.yml')
+  when 'teste'
+    conn = Mongo::Client.new([ '54.210.237.157:27017' ], :database => 'Phariauth_IAM', user: 'root', password: 'bitnami', auth_source: 'admin')
+    users_collection = conn[:users]
+    # Create
+    users_collection.insert_one({name: 'Alan', last_name: 'Borges', age: 19})
+    # Find
+    users = users_collection.find()
+    users.each do |user|
+      puts user.inspect
+    end
+  else
+    'Invalid Argument'
+  end
+end
